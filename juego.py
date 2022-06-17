@@ -81,7 +81,8 @@ def run():
 
             else:
                 # Si el usuario no encontro el par, volvemos a imprimir la tabla
-                table.print_table(hidden_table)
+                table.show_element_table(hidden_table, complete_table, input_row, input_column)
+                hidden_table[input_row][input_column] = '*'
 
     # Cuando termina el ciclo while, significa que el usuario ganó, por lo que imprimimos un mensaje de éxito
     success.win()
