@@ -1,5 +1,6 @@
 # Importamos el módulo de errores para poder validar las filas y columnas
 import errors
+import pandas as pd
 
 
 # La función pide como parámetros la tabla con lo valores reales para poder validar posteiormente si el casillero fue

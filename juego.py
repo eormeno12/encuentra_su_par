@@ -2,6 +2,7 @@
 import menu
 import table
 import success
+import database as db
 
 # Definimos la lista de casilleros abiertos
 opened_boxes = []
@@ -9,6 +10,9 @@ opened_boxes = []
 
 # Función donde se define la lógica del juego
 def run():
+    database = None
+    db.create_file()
+
     # Se imprime la intro de la interface del juego Encuentra su Par
     menu.print_interface_intro()
 
@@ -30,6 +34,10 @@ def run():
     # Mientras que la tabla con la que juega el usuario no sea igual a aquella con los valores reales,
     # se sigue jugando porque significa que todavia no gana
     while hidden_table != complete_table:
+        database = {}
+
+        database = db.read_file()
+
         # Pedimos al usuario que ingrese la fila y columna del casillero a abrir
         input_row, input_column = menu.ask_box_position(complete_table, opened_boxes)
 
@@ -42,14 +50,22 @@ def run():
         # Definimos el casillero en el que se encuentra el usuario, el casillero que acaba de abrir
         actual_box = (input_row, input_column)
 
+        # Obtenemos la letra del casillero abierto
+        actual_box_value = complete_table[actual_box[0]][actual_box[1]]
+
         # Definimos si el par de la letra se ha encontrado
         pair_found = False
 
+        letter_dict = db.letter_json_format(actual_box_value, actual_box)
+        db.add_letter(database, letter_dict)
+        db.update_file(database)
+
+
         # Mientras que el par de la letra no se encuentre, le seguiremos pidiendo al usuario que ingrese otra
         # posición de fila y columna para abrir
+        attempts_count = 0
         while not pair_found:
-            # Obtenemos la letra del casillero abierto
-            actual_box_value = complete_table[actual_box[0]][actual_box[1]]
+            attempts_count += 1
 
             # Pedimos al usuario que ingrese la fila y columna del casillero a abrir, y así comprobar si ha
             # encontrado al par de la letra
@@ -78,14 +94,18 @@ def run():
 
                 # Imprimimos un mensaje de que la letra fue encontrada exitosamente
                 success.letter_found(letter)
-
             else:
                 # Si el usuario no encontro el par, volvemos a imprimir la tabla
                 table.show_element_table(hidden_table, complete_table, input_row, input_column)
                 hidden_table[input_row][input_column] = '*'
 
+            attempt_dict = db.attempt_json_format(attempts_count, possible_box, pair_found)
+            db.add_attempt(database, actual_box_value, attempt_dict)
+            db.update_file(database)
+
     # Cuando termina el ciclo while, significa que el usuario ganó, por lo que imprimimos un mensaje de éxito
     success.win()
+    db.update_history(n_rows, n_columns)
 
 
 if __name__ == '__main__':
