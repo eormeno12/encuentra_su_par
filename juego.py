@@ -10,9 +10,6 @@ opened_boxes = []
 
 # Función donde se define la lógica del juego
 def run():
-    database = None
-    db.create_file()
-
     # Se imprime la intro de la interface del juego Encuentra su Par
     menu.print_interface_intro()
 
@@ -31,11 +28,11 @@ def run():
     # Imprimimos la tabla con los valores ocultos (*)
     table.print_table(hidden_table)
 
+    db.create_file()
+
     # Mientras que la tabla con la que juega el usuario no sea igual a aquella con los valores reales,
     # se sigue jugando porque significa que todavia no gana
     while hidden_table != complete_table:
-        database = {}
-
         database = db.read_file()
 
         # Pedimos al usuario que ingrese la fila y columna del casillero a abrir
@@ -105,7 +102,8 @@ def run():
 
     # Cuando termina el ciclo while, significa que el usuario ganó, por lo que imprimimos un mensaje de éxito
     success.win()
-    db.update_history(n_rows, n_columns)
+    game_summary = db.update_history(n_rows, n_columns)
+    db.print_game_summary(game_summary)
 
 
 if __name__ == '__main__':

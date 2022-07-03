@@ -1,5 +1,7 @@
+import os
 import json
 from datetime import datetime as dt
+
 
 current_date_format = '%d-%m-%Y %H:%M:%S'
 
@@ -78,6 +80,21 @@ def add_letter(db, letter_dict):
 
 
 def update_history(rows, columns):
+    game_summary = get_game_summary(rows, columns)
+    path = './database/historico.csv'
+
+    with open(path, 'a+') as history_file:
+        if os.stat(path).st_size == 0:
+            labels = "Fecha/hora del fin del juego,Número de filas,Número de columnas,Número de jugadas totales," \
+                     "Tiempo total del juego (en segundos),Puntaje\n "
+            history_file.write(labels)
+
+        history_file.write(f'{game_summary}\n')
+
+    return game_summary
+
+
+def get_game_summary(rows, columns):
     db = read_file()
 
     db_keys = list(db.keys())
@@ -98,9 +115,9 @@ def update_history(rows, columns):
     boxes = rows * columns
     points = calc_points(boxes, game_duration)
 
-    with open('./database/historico.csv', 'a') as history_file:
-        data = f'{end_datetime},{rows},{columns},{attempts_count},{game_duration},{points}\n'
-        history_file.write(data)
+    game_summary = f'{end_datetime},{rows},{columns},{attempts_count},{game_duration},{points}'
+
+    return game_summary
 
 
 def time_to_seconds(str_datetime):
@@ -121,6 +138,30 @@ def subtract_dates(start_datetime, end_datetime):
 
 
 def calc_points(boxes, game_duration):
-    points = boxes * game_duration
+    points = game_duration / boxes
 
     return points
+
+
+def print_game_summary(summary):
+    summary_array = summary.split(',')[3:6]
+    columns = ['Número de jugadas', 'Tiempo (segundos)', 'Puntaje']
+
+    print(f'\x1b[1;33m *' * 32)
+    print("""\x1b[1;33m
+██████╗ ███████╗███████╗██╗   ██╗███╗   ███╗███████╗███╗   ██╗
+██╔══██╗██╔════╝██╔════╝██║   ██║████╗ ████║██╔════╝████╗  ██║
+██████╔╝█████╗  ███████╗██║   ██║██╔████╔██║█████╗  ██╔██╗ ██║
+██╔══██╗██╔══╝  ╚════██║██║   ██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║
+██║  ██║███████╗███████║╚██████╔╝██║ ╚═╝ ██║███████╗██║ ╚████║
+╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝
+    """)
+    print(f'\x1b[1;33m *' * 32)
+
+    for column in columns:
+        print(f'\t\x1b[1;36m{column.ljust(18)}', end='')
+    print()
+
+    for element in summary_array:
+        print(f'\t\x1b[1;32m{element.ljust(18)}', end='')
+    print()
