@@ -138,7 +138,7 @@ def subtract_dates(start_datetime, end_datetime):
 
 
 def calc_points(boxes, game_duration):
-    points = game_duration / boxes
+    points = round(game_duration / boxes, 1)
 
     return points
 
