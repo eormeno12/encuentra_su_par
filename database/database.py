@@ -5,10 +5,6 @@ from datetime import datetime as dt
 
 current_date_format = '%d-%m-%Y %H:%M:%S'
 
-# crear archivo
-# leer archivo
-# actualizar archivo
-
 
 def get_current_date():
     current_date = dt.now()
@@ -83,7 +79,7 @@ def update_history(rows, columns):
     game_summary = get_game_summary(rows, columns)
     path = './database/historico.csv'
 
-    with open(path, 'a+') as history_file:
+    with open(path, 'a') as history_file:
         if os.stat(path).st_size == 0:
             labels = "Fecha/hora del fin del juego,Número de filas,Número de columnas,Número de jugadas totales," \
                      "Tiempo total del juego (en segundos),Puntaje\n "
@@ -106,11 +102,11 @@ def get_game_summary(rows, columns):
 
     end_datetime = db_last_letter_attempts[last_letter_attempts_keys[-2]]['fechahora_jugada']
 
+    game_duration = subtract_dates(start_datetime, end_datetime)
+
     attempts_count = 0
     for values in db.values():
         attempts_count += len(values['intentos'])
-
-    game_duration = subtract_dates(start_datetime, end_datetime)
 
     boxes = rows * columns
     points = calc_points(boxes, game_duration)

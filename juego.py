@@ -2,7 +2,7 @@
 import menu
 import table
 import success
-import database as db
+import database.database as db
 
 # Definimos la lista de casilleros abiertos
 opened_boxes = []
